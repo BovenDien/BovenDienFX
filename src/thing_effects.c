@@ -45,10 +45,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int DamageGasEffect;
-extern int SlowGasEffect;
-extern int DamageSlowGasEffect;
-extern int DiseaseGasEffect;
 /******************************************************************************/
 DLLIMPORT long _DK_move_effect(struct Thing *efftng);
 
@@ -140,6 +136,10 @@ struct InitEffect effect_info[] = {
     { 4, 1,  16,  16, -32,  64,  3,   0, 75, 78,  AAffT_None, 1, {0}, 1},
     {10, 1,  20, 150, -80,  80, 20,  36, 27, 29,  AAffT_None, 1, {2560, 52, 0, 0, 0, 0, {{0},{0},{0}}, 0, 0, 0}, 1}, // [68]
     { 0, 0,   0,   0,   0,   0,  0,   0,  0,  0,  0,          0, {0}, 0},
+    {40, 1,  44,  44, -32,  32,  2,  52,  7,  7,  AAffT_GasDamage, 1, {0}, 1},
+    {40, 1,  44,  44, -32,  32,  2,  52,  7,  7,  AAffT_GasSlow, 1, {0}, 1},
+    {40, 1,  44,  44, -32,  32,  2,  52,  7,  7,  AAffT_GasSlowDamage, 1, {0}, 1},
+    {40, 1,  44,  44, -32,  32,  2,  52,  7,  7,  AAffT_GasDisease, 1, {0}, 1},
 };
 
 
@@ -1661,25 +1661,24 @@ TbBool poison_cloud_affecting_thing(struct Thing *tngsrc, struct Thing *tngdst, 
         {
             struct CreatureControl* cctrl = creature_control_get_from_thing(tngdst);
             cctrl->spell_flags |= CSAfF_PoisonCloud;
-            if (DamageGasEffect == 1)
+            switch (area_affect_type)
             {
-                if (max_damage > 0) {
-                HitPoints damage;
-                damage = get_radially_decaying_value(max_damage,3*max_dist/4,max_dist/4,distance)+1;
-                SYNCDBG(7,"Causing %d damage to %s at distance %d",(int)damage,thing_model_name(tngdst),(int)distance);
-                apply_damage_to_thing_and_display_health(tngdst, damage, damage_type, tngsrc->owner);
+            case AAffT_GasDamage:
+                    if (max_damage > 0) {
+                    HitPoints damage;
+                    damage = get_radially_decaying_value(max_damage,3*max_dist/4,max_dist/4,distance)+1;
+                    SYNCDBG(7,"Causing %d damage to %s at distance %d",(int)damage,thing_model_name(tngdst),(int)distance);
+                    apply_damage_to_thing_and_display_health(tngdst, damage, damage_type, tngsrc->owner);
                 }
-            }
-            if (SlowGasEffect == 1)
-            {
-                if (!creature_affected_by_spell(tngdst, SplK_Slow)) {
-                    struct CreatureControl* srcctrl;
+                break;
+            case AAffT_GasSlow:
+                    if (!creature_affected_by_spell(tngdst,SplK_Slow)) {
+                    struct CreatureControl *srcctrl;
                     srcctrl = creature_control_get_from_thing(tngsrc);
                     apply_spell_effect_to_thing(tngdst, SplK_Slow, srcctrl->explevel);
                 }
-            }
-            if (DamageSlowGasEffect == 1)
-            {
+                break;
+            case AAffT_GasSlowDamage:
                 if (max_damage > 0) {
                     HitPoints damage;
                     damage = get_radially_decaying_value(max_damage, 3 * max_dist / 4, max_dist / 4, distance) + 1;
@@ -1691,66 +1690,14 @@ TbBool poison_cloud_affecting_thing(struct Thing *tngsrc, struct Thing *tngdst, 
                     srcctrl = creature_control_get_from_thing(tngsrc);
                     apply_spell_effect_to_thing(tngdst, SplK_Slow, srcctrl->explevel);
                 }
-            }
-            if (DiseaseGasEffect == 1)
-            {
+                break;
+            case AAffT_GasDisease:
                 if (!creature_affected_by_spell(tngdst, SplK_Disease)) {
                     struct CreatureControl* srcctrl;
                     srcctrl = creature_control_get_from_thing(tngsrc);
                     apply_spell_effect_to_thing(tngdst, SplK_Disease, srcctrl->explevel);
                 }
             }
-            //switch (area_affect_type)
-            //{
-            //case AAffT_GasDamage:
-            //    if (GasEffect == 1)
-            //    {
-            //        if (max_damage > 0) {
-            //        HitPoints damage;
-            //        damage = get_radially_decaying_value(max_damage,3*max_dist/4,max_dist/4,distance)+1;
-            //        SYNCDBG(7,"Causing %d damage to %s at distance %d",(int)damage,thing_model_name(tngdst),(int)distance);
-            //        apply_damage_to_thing_and_display_health(tngdst, damage, damage_type, tngsrc->owner);
-            //        }
-            //    }
-            //    if (GasEffect == 2)
-            //    {
-            //        if (!creature_affected_by_spell(tngdst, SplK_Slow)) {
-            //            struct CreatureControl* srcctrl;
-            //            srcctrl = creature_control_get_from_thing(tngsrc);
-            //            apply_spell_effect_to_thing(tngdst, SplK_Slow, srcctrl->explevel);
-            //        }
-            //    }
-            //    break;
-            //case AAffT_GasSlow:
-            //    if (GasEffect == 2)
-            //    {
-            //        if (!creature_affected_by_spell(tngdst,SplK_Slow)) {
-            //        struct CreatureControl *srcctrl;
-            //        srcctrl = creature_control_get_from_thing(tngsrc);
-            //        apply_spell_effect_to_thing(tngdst, SplK_Slow, srcctrl->explevel);
-            //        }
-            //    }
-            //    break;
-            //case AAffT_GasSlowDamage:
-            //    if (max_damage > 0) {
-            //        HitPoints damage;
-            //        damage = get_radially_decaying_value(max_damage, 3 * max_dist / 4, max_dist / 4, distance) + 1;
-            //        SYNCDBG(7, "Causing %d damage to %s at distance %d", (int)damage, thing_model_name(tngdst), (int)distance);
-            //        apply_damage_to_thing_and_display_health(tngdst, damage, damage_type, tngsrc->owner);
-            //    }
-            //    if (!creature_affected_by_spell(tngdst, SplK_Slow)) {
-            //        struct CreatureControl* srcctrl;
-            //        srcctrl = creature_control_get_from_thing(tngsrc);
-            //        apply_spell_effect_to_thing(tngdst, SplK_Slow, srcctrl->explevel);
-            //    }
-            //    break;
-            //case AAffT_GasDisease:
-            //    if (!creature_affected_by_spell(tngdst, SplK_Disease)) {
-            //        struct CreatureControl* srcctrl;
-            //        srcctrl = creature_control_get_from_thing(tngsrc);
-            //        apply_spell_effect_to_thing(tngdst, SplK_Disease, srcctrl->explevel);
-            //    }
-            //}
             affected = true;
         }
     }

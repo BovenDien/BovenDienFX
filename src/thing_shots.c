@@ -45,10 +45,6 @@
 
 #include "keeperfx.hpp"
 int NoEffect = 0;
-int DamageGasEffect = 0;
-int SlowGasEffect = 0;
-int DamageSlowGasEffect = 0;
-int DiseaseGasEffect = 0;
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -126,42 +122,37 @@ TbBool detonate_shot(struct Thing *shotng)
     }
     if ((shotst->impact_effect & ShMF_DamagePoisoncloudEffect) != 0 && NoEffect == 0)
     {
-        castng = create_effect(&shotng->mappos, TngEff_Gas3, shotng->owner);
+        castng = create_effect(&shotng->mappos, TngEff_Gas10, shotng->owner);
         if (!thing_is_invalid(castng)) {
             castng->hit_type = THit_CrtrsOnly;
-            DamageGasEffect = 1;
         }
     }
     if ((shotst->impact_effect & ShMF_SlowPoisoncloudEffect) != 0 && NoEffect == 0)
     {
-        castng = create_effect(&shotng->mappos, TngEff_Gas3, shotng->owner);
+        castng = create_effect(&shotng->mappos, TngEff_Gas11, shotng->owner);
         if (!thing_is_invalid(castng)) {
             castng->hit_type = THit_CrtrsOnly;
-            SlowGasEffect = 1;
         }
     }
     if ((shotst->impact_effect & ShMF_DamageSlowPoisoncloudEffect) != 0 && NoEffect == 0)
     {
-        castng = create_effect(&shotng->mappos, TngEff_Gas3, shotng->owner);
+        castng = create_effect(&shotng->mappos, TngEff_Gas12, shotng->owner);
         if (!thing_is_invalid(castng)) {
             castng->hit_type = THit_CrtrsOnly;
-            DamageSlowGasEffect = 1;
         }
     }
     if ((shotst->impact_effect & ShMF_DiseasePoisoncloudEffect) != 0 && NoEffect == 0)
     {
-        castng = create_effect(&shotng->mappos, TngEff_Gas3, shotng->owner);
+        castng = create_effect(&shotng->mappos, TngEff_Gas13, shotng->owner);
         if (!thing_is_invalid(castng)) {
             castng->hit_type = THit_CrtrsOnly;
-            DiseaseGasEffect = 1;
         }
     }
     if ((shotst->impact_effect & ShMF_FriendlyDamagePoisoncloudEffect) != 0 && NoEffect == 0)
     {
-        castng = create_effect(&shotng->mappos, TngEff_Gas3, shotng->owner);
+        castng = create_effect(&shotng->mappos, TngEff_Gas10, shotng->owner);
         if (!thing_is_invalid(castng)) {
             castng->hit_type = THit_CrtrsOnlyNotOwn;
-            DamageGasEffect = 1;
         }
     }
     if ((shotst->impact_effect & ShMF_LightningEffect) != 0 && NoEffect == 0)
@@ -810,42 +801,37 @@ void create_relevant_effect_for_shot_hitting_thing(struct Thing *shotng, struct 
         }
         if ((shotst->impact_effect & ShMF_DamagePoisoncloudEffect) != 0)
         {
-            efftng = create_effect(&shotng->mappos, TngEff_Gas3, shotng->owner);
+            efftng = create_effect(&shotng->mappos, TngEff_Gas10, shotng->owner);
             if (!thing_is_invalid(efftng)) {
                 efftng->hit_type = THit_CrtrsOnly;
-                DamageGasEffect = 1;
             }
         }
         if ((shotst->impact_effect & ShMF_SlowPoisoncloudEffect) != 0)
         {
-            efftng = create_effect(&shotng->mappos, TngEff_Gas3, shotng->owner);
+            efftng = create_effect(&shotng->mappos, TngEff_Gas11, shotng->owner);
             if (!thing_is_invalid(efftng)) {
                 efftng->hit_type = THit_CrtrsOnly;
-                SlowGasEffect = 1;
             }
         }
         if ((shotst->impact_effect & ShMF_DamageSlowPoisoncloudEffect) != 0)
         {
-            efftng = create_effect(&shotng->mappos, TngEff_Gas3, shotng->owner);
+            efftng = create_effect(&shotng->mappos, TngEff_Gas12, shotng->owner);
             if (!thing_is_invalid(efftng)) {
                 efftng->hit_type = THit_CrtrsOnly;
-                DamageSlowGasEffect = 1;
             }
         }
         if ((shotst->impact_effect & ShMF_DiseasePoisoncloudEffect) != 0)
         {
-            efftng = create_effect(&shotng->mappos, TngEff_Gas3, shotng->owner);
+            efftng = create_effect(&shotng->mappos, TngEff_Gas13, shotng->owner);
             if (!thing_is_invalid(efftng)) {
                 efftng->hit_type = THit_CrtrsOnly;
-                DiseaseGasEffect = 1;
             }
         }
         if ((shotst->impact_effect & ShMF_FriendlyDamagePoisoncloudEffect) != 0)
         {
-            efftng = create_effect(&shotng->mappos, TngEff_Gas3, shotng->owner);
+            efftng = create_effect(&shotng->mappos, TngEff_Gas10, shotng->owner);
             if (!thing_is_invalid(efftng)) {
                 efftng->hit_type = THit_CrtrsOnlyNotOwn;
-                DamageGasEffect = 1;
             }
         }
         if ((shotst->impact_effect & ShMF_LightningEffect) != 0)
